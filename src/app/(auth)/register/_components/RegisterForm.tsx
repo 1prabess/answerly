@@ -3,16 +3,20 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FaGoogle, FaGithub } from "react-icons/fa";
-import { RegisterSchema, RegisterType } from "@/lib/zodSchemas";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTransition } from "react";
 import { authClient } from "@/lib/auth-client";
+import { toast } from "sonner";
+import Link from "next/link";
+import { RegisterSchema, RegisterType } from "@/lib/zodSchemas";
+import { Loader } from "lucide-react";
 
 const RegisterForm = () => {
   const [isRegistering, startRegistering] = useTransition();
+
   const {
     register,
     handleSubmit,
@@ -24,17 +28,33 @@ const RegisterForm = () => {
 
   const onSubmit = (data: RegisterType) => {
     startRegistering(async () => {
-      await authClient.signUp.email({
-        name: data.username,
-        email: data.email,
-        password: data.password,
-      });
+      await authClient.signUp.email(
+        {
+          name: data.username,
+          email: data.email,
+          password: data.password,
+        },
+        {
+          onSuccess: () => {
+            toast.success("Account created successfully!");
+          },
+          onError: (ctx) => {
+            toast.error(ctx.error.message);
+          },
+        }
+      );
+    });
+  };
+
+  const handleOAuth = async (provider: "google" | "github") => {
+    await authClient.signIn.social({
+      provider,
     });
   };
 
   return (
     <div className="flex flex-col gap-4 w-full max-w-md mx-auto px-4 sm:px-6 md:px-0">
-      <Card className="w-full">
+      <Card className="w-full bg-background ">
         <CardHeader>
           <CardTitle className="text-2xl">Create your account</CardTitle>
         </CardHeader>
@@ -90,8 +110,16 @@ const RegisterForm = () => {
                 )}
               </div>
 
-              <Button type="submit" className="w-full mt-2">
-                Register
+              <Button
+                type="submit"
+                disabled={isRegistering}
+                className="w-full mt-2"
+              >
+                {isRegistering ? (
+                  <Loader className="size-4 animate-spin" />
+                ) : (
+                  "Create account"
+                )}
               </Button>
             </div>
 
@@ -105,14 +133,20 @@ const RegisterForm = () => {
             {/* OAuth buttons */}
             <div className="flex  sm:items-center sm:justify-between gap-4">
               <Button
+                type="button"
                 variant="outline"
+                size="lg"
+                onClick={() => handleOAuth("google")}
                 className="flex-1 flex items-center justify-center gap-2 w-full sm:w-auto"
               >
                 <FaGoogle className="size-4" />
                 Google
               </Button>
               <Button
+                type="button"
                 variant="outline"
+                size="lg"
+                onClick={() => handleOAuth("github")}
                 className="flex-1  flex items-center justify-center gap-2 w-full sm:w-auto"
               >
                 <FaGithub className="size-4" />
@@ -122,10 +156,7 @@ const RegisterForm = () => {
 
             {/* Footer */}
             <div className="text-center text-sm mt-4">
-              Already have an account?{" "}
-              <a href="#" className="underline underline-offset-4">
-                Login
-              </a>
+              Already have an account? <Link href="/login">Login</Link>
             </div>
           </form>
         </CardContent>

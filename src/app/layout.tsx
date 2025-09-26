@@ -3,6 +3,9 @@ import { Geist, Geist_Mono } from "next/font/google";
 
 import "./globals.css";
 import { ThemeProvider } from "@/components/layout/theme-provider";
+import { Toaster } from "sonner";
+import Navbar from "@/components/layout/Navbar";
+import Sidebar from "@/components/layout/Sidebar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,9 +24,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body
@@ -35,7 +38,14 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <Navbar />
+          <div className="flex pt-8">
+            <Sidebar />
+            <main className="flex-1 overflow-y-auto max-w-4xl pt-12 px-4 m-auto">
+              {children}
+            </main>
+          </div>
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>

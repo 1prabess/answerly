@@ -53,10 +53,12 @@ const RegisterForm = () => {
   };
 
   return (
-    <div className="flex flex-col gap-4 w-full max-w-md mx-auto px-4 sm:px-6 md:px-0">
-      <Card className="w-full bg-background ">
+    <div className="flex flex-col gap-4 w-full  mx-auto  ">
+      <Card className="w-full rounded-sm bg-background gap-2 sm:gap-4">
         <CardHeader>
-          <CardTitle className="text-2xl">Create your account</CardTitle>
+          <CardTitle className="text-2xl sm:text-3xl">
+            Create your account
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <form
@@ -131,7 +133,7 @@ const RegisterForm = () => {
             </div>
 
             {/* OAuth buttons */}
-            <div className="flex  sm:items-center sm:justify-between gap-4">
+            <div className="flex  sm:items-center sm:justify-between gap-2">
               <Button
                 type="button"
                 variant="outline"
@@ -155,7 +157,7 @@ const RegisterForm = () => {
             </div>
 
             {/* Footer */}
-            <div className="text-center text-sm mt-4">
+            <div className="text-center text-sm ">
               Already have an account? <Link href="/login">Login</Link>
             </div>
           </form>

@@ -53,10 +53,12 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="flex flex-col gap-4 w-full max-w-md mx-auto px-4 sm:px-6 ">
-      <Card className="w-full  bg-background ">
+    <div className="flex flex-col gap-4 w-full max-w-md mx-auto   ">
+      <Card className="w-full rounded-sm bg-background gap-2 sm:gap-4 ">
         <CardHeader>
-          <CardTitle className="text-2xl">Login to your account</CardTitle>
+          <CardTitle className="text-2xl  sm:text-3xl">
+            Login to your account
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <form
@@ -116,7 +118,7 @@ const LoginForm = () => {
             </div>
 
             {/* OAuth buttons */}
-            <div className="flex  sm:items-center sm:justify-between gap-4">
+            <div className="flex  sm:items-center sm:justify-between gap-2">
               <Button
                 type="button"
                 size="lg"
@@ -140,7 +142,7 @@ const LoginForm = () => {
             </div>
 
             {/* Footer */}
-            <div className="text-center text-sm mt-4">
+            <div className="text-center text-sm">
               Don't have an account? <Link href="/register">Register</Link>
             </div>
           </form>

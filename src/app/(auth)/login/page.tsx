@@ -2,8 +2,8 @@ import LoginForm from "./_components/LoginForm";
 
 const LoginPage = () => {
   return (
-    <div className="flex flex-col mt-20 items-center justify-center gap-6 p-2 md:p-10">
-      <div className="w-full max-w-md flex flex-col gap-6 mx-auto">
+    <div className="fixed inset-0 flex items-center justify-center ">
+      <div className="w-full max-w-md p-4">
         <LoginForm />
       </div>
     </div>

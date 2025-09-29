@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/sheet";
 import Sidebar from "./Sidebar";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
-import UserDropDown from "../ui/comp-377";
+import UserDropDown from "../ui/user-dropdown";
 
 const Navbar = () => {
   const { data: session } = authClient.useSession();
@@ -22,9 +22,7 @@ const Navbar = () => {
       className="fixed top-0 left-0 w-full z-50 bg-background border-b"
       style={{ height: "64px" }}
     >
-      {/* Center container */}
       <div className="mx-auto max-w-[90rem] h-full px-4 sm:px-8 flex items-center justify-between">
-        {/* Left: Logo + Mobile Sidebar */}
         <div className="flex items-center gap-4">
           <Sheet>
             <SheetTrigger className="lg:hidden">
@@ -41,12 +39,10 @@ const Navbar = () => {
           <div className="text-xl font-semibold">Answerly</div>
         </div>
 
-        {/* Center: Search */}
         <div className="hidden md:flex flex-1 px-6 max-w-md">
           <Input type="text" placeholder="Search..." className="w-full" />
         </div>
 
-        {/* Right: Theme + User */}
         <div className="flex items-center gap-4">
           <ThemeToggle />
           <UserDropDown

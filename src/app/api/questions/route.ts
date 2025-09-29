@@ -1,11 +1,10 @@
 import { Question } from "@/generated/prisma";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { createQuestionSchema } from "@/lib/zod/question";
+import { CreateQuestionSchema } from "@/lib/zod/questionSchema";
 import { ApiResponse } from "@/types/api";
 import { NextRequest, NextResponse } from "next/server";
 
-// Get all questions
 export const GET = async (request: NextRequest) => {
   try {
     const session = await auth.api.getSession({ headers: request.headers });
@@ -59,7 +58,7 @@ export const GET = async (request: NextRequest) => {
     );
   }
 };
-// Create an question
+
 export const POST = async (request: NextRequest) => {
   try {
     const body = await request.json();
@@ -73,7 +72,7 @@ export const POST = async (request: NextRequest) => {
         { status: 400 }
       );
 
-    const validated = createQuestionSchema.safeParse(body);
+    const validated = CreateQuestionSchema.safeParse(body);
 
     if (!validated.success) {
       const allErrors = Object.values(validated.error.flatten().fieldErrors)

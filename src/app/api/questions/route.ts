@@ -1,4 +1,5 @@
 import { Question } from "@/generated/prisma";
+import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { createQuestionSchema } from "@/lib/zod/question";
 import { ApiResponse } from "@/types/api";
@@ -7,25 +8,57 @@ import { NextRequest, NextResponse } from "next/server";
 // Get all questions
 export const GET = async (request: NextRequest) => {
   try {
-    const questions = await prisma.question.findMany();
+    const session = await auth.api.getSession({ headers: request.headers });
+    const userId = session?.user?.id;
 
-    return NextResponse.json<ApiResponse<Question[]>>(
+    const questions = await prisma.question.findMany({
+      include: {
+        author: true,
+        votes: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    const formattedQuestions = questions.map((q) => {
+      const upVotes = q.votes.filter((v) => v.type === "UP").length;
+      const downVotes = q.votes.filter((v) => v.type === "DOWN").length;
+      const userVoted = userId
+        ? q.votes.find((v) => v.userId === userId)?.type || null
+        : null;
+
+      return {
+        id: q.id,
+        title: q.title,
+        description: q.description,
+        image: q.image,
+        createdAt: q.createdAt,
+        updatedAt: q.updatedAt,
+        author: q.author,
+        upVotes,
+        downVotes,
+        score: upVotes - downVotes,
+        userVoted,
+      };
+    });
+
+    return NextResponse.json<ApiResponse<typeof formattedQuestions>>(
       {
         success: true,
         message: "Questions fetched successfully.",
-        data: questions,
+        data: formattedQuestions,
       },
       { status: 200 }
     );
   } catch (error) {
-    console.log("Error in questions [GET]", error);
+    console.log("Error fetching questions:", error);
     return NextResponse.json<ApiResponse<never>>(
       { success: false, error: "Internal server error." },
       { status: 500 }
     );
   }
 };
-
 // Create an question
 export const POST = async (request: NextRequest) => {
   try {

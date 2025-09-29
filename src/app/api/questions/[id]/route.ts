@@ -17,7 +17,6 @@ export const POST = async (
         error: "UserId and Vote Type is required!",
       });
 
-    // Check for existing vote
     const existingVote = await prisma.vote.findFirst({
       where: {
         userId: body.userId,
@@ -29,7 +28,6 @@ export const POST = async (
 
     if (existingVote) {
       if (existingVote.type === body.type) {
-        // Same vote type: delete the vote (toggle off)
         await prisma.vote.delete({
           where: { id: existingVote.id },
         });
@@ -38,14 +36,12 @@ export const POST = async (
           message: "Vote removed successfully!",
         });
       } else {
-        // Different vote type: update the vote
         vote = await prisma.vote.update({
           where: { id: existingVote.id },
           data: { type: body.type },
         });
       }
     } else {
-      // No existing vote: create a new one
       vote = await prisma.vote.create({
         data: {
           userId: body.userId,

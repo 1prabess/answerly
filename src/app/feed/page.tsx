@@ -1,22 +1,18 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { getQuestions } from "@/lib/services/questions";
 import QuestionCard from "./_components/QuestionCard";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-
-import AskBox from "./_components/AskBox";
-import ScrollableNewsFeed from "./_components/NewsCard";
+import AskQuestionBox from "./_components/AskQuestionBox";
 import FeedSkeleton from "./_components/FeedSkeleton";
 import QuestionFormModal from "./_components/QuestionFormModal";
+import RecommendedQuestions from "./_components/RecommendedQuestions";
 
-const Feed = () => {
-  const router = useRouter();
-
+const FeedPage = () => {
   const { data: session, isPending: isSessionLoading } =
     authClient.useSession();
 
@@ -97,10 +93,10 @@ const Feed = () => {
       <h1 className="text-muted-foreground font-semibold mb-2">
         Recommended Communities
       </h1>
-      <ScrollableNewsFeed />
+      <RecommendedQuestions />
       <div className="lg:grid lg:grid-cols-[2fr_1fr] lg:gap-12 mt-2">
         <div>
-          <AskBox
+          <AskQuestionBox
             name={session?.user.name || ""}
             avatar={session?.user.image || ""}
           />
@@ -124,4 +120,4 @@ const Feed = () => {
   );
 };
 
-export default Feed;
+export default FeedPage;

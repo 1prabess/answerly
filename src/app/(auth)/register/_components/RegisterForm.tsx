@@ -11,7 +11,7 @@ import { useTransition } from "react";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
 import Link from "next/link";
-import { RegisterSchema, RegisterType } from "@/lib/zodSchemas";
+import { RegisterSchema, RegisterType } from "@/lib/zod/authSchema";
 import { Loader } from "lucide-react";
 
 const RegisterForm = () => {

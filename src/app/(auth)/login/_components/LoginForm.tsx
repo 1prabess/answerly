@@ -12,7 +12,7 @@ import { useTransition } from "react";
 import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
-import { LoginSchema, LoginType } from "@/lib/zodSchemas";
+import { LoginSchema, LoginType } from "@/lib/zod/authSchema";
 import { Loader } from "lucide-react";
 
 const LoginForm = () => {

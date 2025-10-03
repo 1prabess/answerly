@@ -28,3 +28,16 @@ export const createQuestion = async (payload: CreateQuestionType) => {
 
   return response.data.data;
 };
+
+// Categories
+export const fetchCategories = async () => {
+  const response = await axios.get("/api/categories");
+  return response.data.data;
+};
+
+// Tags by Category
+export const fetchTagsByCategory = async (categoryId: string) => {
+  console.log(categoryId);
+  const response = await axios.get(`/api/categories/${categoryId}`);
+  return response.data.data;
+};

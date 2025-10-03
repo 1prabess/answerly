@@ -16,6 +16,7 @@ import UserDropDown from "../ui/user-dropdown";
 
 const Navbar = () => {
   const { data: session } = authClient.useSession();
+  console.log(session);
 
   return (
     <nav

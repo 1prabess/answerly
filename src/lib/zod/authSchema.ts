@@ -2,7 +2,7 @@ import { z } from "zod";
 
 // Register account
 export const RegisterSchema = z.object({
-  username: z.string().min(4, "Username must be at least 4 characters."),
+  fullName: z.string().min(4, "Fullname must be at least 4 characters."),
   email: z.email(),
   password: z.string().min(8, "Password must be at least 8 characters long."),
 });

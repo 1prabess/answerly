@@ -23,14 +23,14 @@ const RegisterForm = () => {
     formState: { errors },
   } = useForm<RegisterType>({
     resolver: zodResolver(RegisterSchema),
-    defaultValues: { username: "", email: "", password: "" },
+    defaultValues: { fullName: "", email: "", password: "" },
   });
 
   const onSubmit = (data: RegisterType) => {
     startRegistering(async () => {
       await authClient.signUp.email(
         {
-          name: data.username,
+          name: data.fullName,
           email: data.email,
           password: data.password,
         },
@@ -68,16 +68,16 @@ const RegisterForm = () => {
             {/* Form fields */}
             <div className="grid gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="username">Username</Label>
+                <Label htmlFor="username">Full Name</Label>
                 <Input
-                  id="username"
+                  id="fullName"
                   type="text"
-                  placeholder="Enter your username"
-                  {...register("username")}
+                  placeholder="Enter your full name"
+                  {...register("fullName")}
                 />
-                {errors.username && (
+                {errors.fullName && (
                   <span className="text-red-400 text-sm">
-                    {errors.username.message}
+                    {errors.fullName.message}
                   </span>
                 )}
               </div>

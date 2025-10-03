@@ -14,6 +14,7 @@ export const GET = async (request: NextRequest) => {
       include: {
         author: true,
         votes: true,
+        tags: true,
       },
       orderBy: {
         createdAt: "desc",
@@ -35,6 +36,7 @@ export const GET = async (request: NextRequest) => {
         createdAt: q.createdAt,
         updatedAt: q.updatedAt,
         author: q.author,
+        tags: q.tags,
         upVotes,
         downVotes,
         score: upVotes - downVotes,
@@ -89,7 +91,29 @@ export const POST = async (request: NextRequest) => {
       );
     }
 
-    const { title, description, image, authorId } = validated.data;
+    const { title, description, image, authorId, tagNames } = validated.data;
+
+    // Find the tags
+    const tags = await prisma.tag.findMany({
+      where: { name: { in: tagNames } },
+    });
+
+    const foundTags = tags.map((tag) => tag.name);
+
+    const missingTags = tagNames.filter(
+      (name: string) => !foundTags.includes(name)
+    );
+
+    if (missingTags.length > 0) {
+      return NextResponse.json<ApiResponse<never>>(
+        {
+          success: false,
+          message: "Invalid tags submitted",
+          error: missingTags,
+        },
+        { status: 400 }
+      );
+    }
 
     const question = await prisma.question.create({
       data: {
@@ -97,7 +121,11 @@ export const POST = async (request: NextRequest) => {
         description,
         image,
         authorId,
+        tags: {
+          connect: tags.map((tag) => ({ id: tag.id })),
+        },
       },
+      include: { tags: true },
     });
 
     return NextResponse.json<ApiResponse<Question>>(

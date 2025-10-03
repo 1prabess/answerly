@@ -35,6 +35,7 @@ const QuestionCard = ({ question, userId }: QuestionCardProps) => {
 
   return (
     <article className="py-4 px-2 border-b space-y-2">
+      {/* Header */}
       <header className="flex justify-between items-center text-sm">
         <div className="flex items-center gap-2">
           <Image
@@ -56,31 +57,49 @@ const QuestionCard = ({ question, userId }: QuestionCardProps) => {
         </button>
       </header>
 
+      {/* Title */}
       <h2 className="font-semibold text-lg">{question.title}</h2>
 
+      {/* Tags */}
+      {question.tags.length > 0 && (
+        <div className="flex flex-wrap gap-2 mt-1">
+          {question.tags.map((tag) => (
+            <span
+              key={tag.id}
+              className="text-xs bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-2 py-1 rounded-full"
+            >
+              {tag.name}
+            </span>
+          ))}
+        </div>
+      )}
+
+      {/* Description */}
       {question.description && (
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-muted-foreground mt-2">
           {question.description.length > 100
             ? question.description.slice(0, 100) + "..."
             : question.description}
         </p>
       )}
 
+      {/* Image */}
       {question.image && (
         <Image
           src={question.image}
           alt={question.title}
           width={800}
           height={400}
-          className="w-full my-4 h-full  object-cover rounded-sm"
+          className="w-full my-4 h-full object-cover rounded-sm"
           priority
         />
       )}
 
-      <footer className="flex  items-center space-x-6 text-sm">
+      {/* Footer */}
+      <footer className="flex items-center space-x-6 text-sm">
         <button
           onClick={() => handleVote("UP")}
-          className="flex items-center space-x-1 cursor-pointer  hover:text-red-400"
+          className="flex items-center space-x-1 cursor-pointer hover:text-red-400"
         >
           {question.userVoted === "UP" ? (
             <ArrowBigUp size={18} className="text-red-400 fill-red-400" />

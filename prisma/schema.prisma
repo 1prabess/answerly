@@ -31,6 +31,13 @@ model User {
   @@map("user")
 }
 
+model Follow {
+  id          String   @id @default(cuid())
+  followerId  String
+  followingId String
+  createdAt   DateTime @default(now())
+}
+
 model Session {
   id        String   @id
   expiresAt DateTime
@@ -76,18 +83,6 @@ model Verification {
   @@map("verification")
 }
 
-model Question {
-  id          String   @id @default(cuid())
-  title       String
-  description String?
-  image       String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  author      User?    @relation(fields: [authorId], references: [id])
-  authorId    String?
-  votes       Vote[]
-}
-
 model Vote {
   id         String   @id @default(cuid())
   user       User     @relation(fields: [userId], references: [id])
@@ -101,4 +96,31 @@ model Vote {
 enum VoteType {
   UP
   DOWN
+}
+
+model Category {
+  id   String @id @default(cuid())
+  name String @unique
+  tags Tag[]
+}
+
+model Tag {
+  id         String     @id @default(cuid())
+  name       String     @unique
+  questions  Question[]
+  category   Category?  @relation(fields: [categoryId], references: [id])
+  categoryId String?
+}
+
+model Question {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  image       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  author      User?    @relation(fields: [authorId], references: [id])
+  authorId    String?
+  votes       Vote[]
+  tags        Tag[]
 }

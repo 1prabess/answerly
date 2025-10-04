@@ -1,10 +1,11 @@
-import { Question } from "@/generated/prisma";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { CreateQuestionSchema } from "@/lib/zod/questionSchema";
 import { ApiResponse } from "@/types/api";
+import { FeedQuestion, Question } from "@/types/question";
 import { NextRequest, NextResponse } from "next/server";
 
+// Get questions from all users
 export const GET = async (request: NextRequest) => {
   try {
     const session = await auth.api.getSession({ headers: request.headers });
@@ -21,7 +22,7 @@ export const GET = async (request: NextRequest) => {
       },
     });
 
-    const formattedQuestions = questions.map((q) => {
+    const formattedQuestions: FeedQuestion[] = questions.map((q) => {
       const upVotes = q.votes.filter((v) => v.type === "UP").length;
       const downVotes = q.votes.filter((v) => v.type === "DOWN").length;
       const userVoted = userId
@@ -44,7 +45,7 @@ export const GET = async (request: NextRequest) => {
       };
     });
 
-    return NextResponse.json<ApiResponse<typeof formattedQuestions>>(
+    return NextResponse.json<ApiResponse<FeedQuestion[]>>(
       {
         success: true,
         message: "Questions fetched successfully.",
@@ -61,6 +62,7 @@ export const GET = async (request: NextRequest) => {
   }
 };
 
+// Create question
 export const POST = async (request: NextRequest) => {
   try {
     const body = await request.json();
@@ -84,7 +86,6 @@ export const POST = async (request: NextRequest) => {
       return NextResponse.json<ApiResponse<never>>(
         {
           success: false,
-          message: "Validation error.",
           error: allErrors,
         },
         { status: 400 }
@@ -93,7 +94,6 @@ export const POST = async (request: NextRequest) => {
 
     const { title, description, image, authorId, tagNames } = validated.data;
 
-    // Find the tags
     const tags = await prisma.tag.findMany({
       where: { name: { in: tagNames } },
     });
@@ -108,14 +108,13 @@ export const POST = async (request: NextRequest) => {
       return NextResponse.json<ApiResponse<never>>(
         {
           success: false,
-          message: "Invalid tags submitted",
           error: missingTags,
         },
         { status: 400 }
       );
     }
 
-    const question = await prisma.question.create({
+    const question: Question = await prisma.question.create({
       data: {
         title,
         description,
@@ -128,6 +127,8 @@ export const POST = async (request: NextRequest) => {
       include: { tags: true },
     });
 
+    console.log(question);
+
     return NextResponse.json<ApiResponse<Question>>(
       {
         success: true,
@@ -137,7 +138,7 @@ export const POST = async (request: NextRequest) => {
       { status: 201 }
     );
   } catch (error) {
-    console.log("Error in questions [POST]", error);
+    console.log("Error in creating question:", error);
     return NextResponse.json<ApiResponse<never>>(
       { success: false, error: "Internal server error." },
       { status: 500 }

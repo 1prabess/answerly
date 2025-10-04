@@ -25,7 +25,7 @@ const AskQuestionBox = ({ avatar, name }: AskBoxProps) => {
               className="w-10 h-10 rounded-full object-cover"
             />
           ) : (
-            <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-white font-semibold">
+            <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center font-semibold">
               {name
                 .split(" ")
                 .map((n) => n[0])

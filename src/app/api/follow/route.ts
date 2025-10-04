@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 import { ApiResponse } from "@/types/api";
 import { NextRequest, NextResponse } from "next/server";
 
+// Follow user
 export const POST = async (request: NextRequest) => {
   try {
     const { followerId, followingId } = await request.json();
@@ -34,7 +35,7 @@ export const POST = async (request: NextRequest) => {
       { status: 201 }
     );
   } catch (error) {
-    console.log("Error in follow [POST]", error);
+    console.log("Error in following the user:", error);
     return NextResponse.json<ApiResponse<never>>(
       { success: false, error: "Internal server error." },
       { status: 500 }

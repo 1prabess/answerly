@@ -12,7 +12,7 @@ export const GET = async () => {
       data: categories,
     });
   } catch (error) {
-    console.error(error);
+    console.log("Error in fetching the categories:", error);
     return NextResponse.json<ApiResponse<never>>(
       { success: false, error: "Internal server error." },
       { status: 500 }

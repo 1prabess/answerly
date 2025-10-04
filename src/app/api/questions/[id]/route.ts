@@ -1,8 +1,9 @@
-import { Vote } from "@/generated/prisma";
 import prisma from "@/lib/prisma";
 import { ApiResponse } from "@/types/api";
+import { Vote } from "@/types/vote";
 import { NextRequest, NextResponse } from "next/server";
 
+// Vote questions
 export const POST = async (
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -57,7 +58,7 @@ export const POST = async (
       data: vote,
     });
   } catch (error) {
-    console.log("Error in questions vote [POST]", error);
+    console.log("Error in voting question:", error);
     return NextResponse.json<ApiResponse<never>>(
       { success: false, error: "Internal server error." },
       { status: 500 }

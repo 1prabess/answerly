@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
       "res.cloudinary.com",
       "picsum.photos",
       "avatars.githubusercontent.com",
+      "www.redditstatic.com",
     ],
   },
 };

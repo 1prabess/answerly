@@ -2,6 +2,7 @@ import { FeedQuestion } from "@/types/question";
 import axios from "axios";
 import { CreateQuestionType } from "../zod/questionSchema";
 
+// Get questions
 export const getQuestions = async () => {
   const response = await axios.get("/api/questions");
 
@@ -10,6 +11,7 @@ export const getQuestions = async () => {
   return questions;
 };
 
+// Vote a question
 export const voteQuestion = async (
   questionId: string,
   userId: string,
@@ -23,19 +25,20 @@ export const voteQuestion = async (
   return response.data.data;
 };
 
+// Create question
 export const createQuestion = async (payload: CreateQuestionType) => {
   const response = await axios.post(`/api/questions`, payload);
 
   return response.data.data;
 };
 
-// Categories
+// Get categories
 export const fetchCategories = async () => {
   const response = await axios.get("/api/categories");
   return response.data.data;
 };
 
-// Tags by Category
+// Get tags according to the category
 export const fetchTagsByCategory = async (categoryId: string) => {
   console.log(categoryId);
   const response = await axios.get(`/api/categories/${categoryId}`);

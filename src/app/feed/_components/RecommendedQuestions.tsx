@@ -17,7 +17,7 @@ const RecommendedQuestionCard = ({
   subreddit,
 }: RecommendedQuestionCardProps) => {
   return (
-    <Card className="relative rounded-sm min-w-[320px] max-w-[320px] p-0 border-none overflow-hidden snap-start">
+    <Card className="relative rounded-md min-w-[320px] max-w-[320px] p-0 border-none overflow-hidden snap-start">
       <div className="relative w-full h-44">
         <Image src={image} alt={title} fill className="object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent" />

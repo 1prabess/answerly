@@ -1,22 +1,24 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { getQuestions } from "@/lib/services/questions";
-import QuestionCard from "./_components/QuestionCard";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import AskQuestionBox from "./_components/AskQuestionBox";
 import FeedSkeleton from "./_components/FeedSkeleton";
 import QuestionFormModal from "./_components/QuestionFormModal";
 import RecommendedQuestions from "./_components/RecommendedQuestions";
+import { useRouter } from "next/navigation";
+import FeedQuestionCard from "./_components/FeedQuestionCard";
 
 const FeedPage = () => {
   const { data: session, isPending: isSessionLoading } =
     authClient.useSession();
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const router = useRouter();
 
   const {
     data: questions = [],
@@ -29,6 +31,12 @@ const FeedPage = () => {
     staleTime: 5 * 60 * 1000,
     retry: 2,
   });
+
+  useEffect(() => {
+    if (!isSessionLoading && !isPending && session?.user.username === null) {
+      router.push("/set-username");
+    }
+  }, [isSessionLoading, isPending, session, router]);
 
   if (isSessionLoading || isPending) {
     return (
@@ -96,13 +104,13 @@ const FeedPage = () => {
       <RecommendedQuestions />
       <div className="lg:grid lg:grid-cols-[2fr_1fr] lg:gap-12 mt-2">
         <div>
-          <AskQuestionBox
+          {/* <AskQuestionBox
             name={session?.user.name || ""}
             avatar={session?.user.image || ""}
-          />
+          /> */}
           <div role="list" aria-label="Question feed">
             {questions.map((question) => (
-              <QuestionCard
+              <FeedQuestionCard
                 key={question.id}
                 question={question}
                 userId={session?.user.id!}

@@ -1,5 +1,6 @@
 import axios from "axios";
 
+// Cloudinary image upload
 export async function uploadToCloudinary(file: File): Promise<string> {
   const formData = new FormData();
   formData.append("file", file);

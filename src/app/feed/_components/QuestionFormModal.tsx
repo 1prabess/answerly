@@ -45,6 +45,7 @@ const QuestionFormModal = ({ isOpen, onClose }: QuestionFormModalProps) => {
   const queryClient = useQueryClient();
   const { data: session, isPending: isSessionLoading } =
     authClient.useSession();
+
   const { data: categories } = useQuery({
     queryKey: ["categories"],
     queryFn: fetchCategories,

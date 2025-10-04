@@ -14,9 +14,11 @@ import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { LoginSchema, LoginType } from "@/lib/zod/authSchema";
 import { Loader } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const LoginForm = () => {
   const [isLoggingIn, startLoggingIn] = useTransition();
+  const router = useRouter();
 
   const {
     register,
@@ -37,6 +39,7 @@ const LoginForm = () => {
         {
           onSuccess: () => {
             toast.success("Logged in successfully!");
+            router.push("/feed");
           },
           onError: (ctx) => {
             toast.error(ctx.error.message);

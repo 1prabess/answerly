@@ -13,10 +13,19 @@ import {
 import Sidebar from "./Sidebar";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import UserDropDown from "../ui/user-dropdown";
+import { useRouter } from "next/navigation";
 
 const Navbar = () => {
   const { data: session } = authClient.useSession();
-  console.log(session);
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    await authClient.signOut({
+      fetchOptions: {
+        onSuccess: () => window.location.reload(),
+      },
+    });
+  };
 
   return (
     <nav
@@ -37,7 +46,12 @@ const Navbar = () => {
             </SheetContent>
           </Sheet>
 
-          <div className="text-xl font-semibold">Answerly</div>
+          <div
+            onClick={() => router.push("/")}
+            className="text-xl font-semibold"
+          >
+            Answerly
+          </div>
         </div>
 
         <div className="hidden md:flex flex-1 px-6 max-w-md">
@@ -50,6 +64,7 @@ const Navbar = () => {
             name={session?.user.name}
             email={session?.user.email}
             avatar={session?.user.image}
+            onSignOut={handleSignOut}
           />
         </div>
       </div>

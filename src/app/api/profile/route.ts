@@ -1,58 +1,115 @@
 import prisma from "@/lib/prisma";
 import { ApiResponse } from "@/types/api";
+import { UserProfile } from "@/types/profile";
 import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@/lib/auth";
 
-export const POST = async (request: NextRequest) => {
+// Get user profile
+export const GET = async (request: NextRequest) => {
   try {
-    const { userId } = await request.json();
+    const username = request.nextUrl.searchParams.get("username");
+    const page = Number(request.nextUrl.searchParams.get("page") || 1);
+    const limit = Number(request.nextUrl.searchParams.get("limit") || 10);
+    const skip = (page - 1) * limit;
+
+    if (!username)
+      return NextResponse.json<ApiResponse<never>>({
+        success: false,
+        error: "Username query parameter is required",
+      });
 
     const user = await prisma.user.findUnique({
-      where: {
-        id: userId,
-      },
+      where: { username },
       select: {
+        id: true,
         name: true,
         email: true,
         emailVerified: true,
         image: true,
         createdAt: true,
-        questions: true,
       },
+    });
+
+    if (!user)
+      return NextResponse.json<ApiResponse<never>>({
+        success: false,
+        error: "No user found",
+      });
+
+    // Get session to identify the requesting user
+    const session = await auth.api.getSession({ headers: request.headers });
+    const currentUserId = session?.user?.id;
+
+    const questions = await prisma.question.findMany({
+      where: { authorId: user.id },
+      include: {
+        author: true,
+        votes: true,
+        tags: true,
+      },
+      skip,
+      take: limit,
+      orderBy: { createdAt: "desc" },
+    });
+
+    const formattedQuestions = questions.map((q) => {
+      const upVotes = q.votes.filter((v) => v.type === "UP").length;
+      const downVotes = q.votes.filter((v) => v.type === "DOWN").length;
+      const userVoted = currentUserId
+        ? q.votes.find((v) => v.userId === currentUserId)?.type || null
+        : null;
+
+      return {
+        id: q.id,
+        title: q.title,
+        description: q.description,
+        image: q.image,
+        createdAt: q.createdAt,
+        updatedAt: q.updatedAt,
+        author: q.author,
+        tags: q.tags,
+        upVotes,
+        downVotes,
+        score: upVotes - downVotes,
+        userVoted,
+      };
+    });
+
+    const totalQuestions = await prisma.question.count({
+      where: { authorId: user.id },
     });
 
     const following = await prisma.follow.findMany({
-      where: {
-        followerId: userId,
-      },
-      select: {
-        followingId: true,
-      },
+      where: { followerId: user.id },
+      select: { followingId: true },
     });
-
-    const followingIds = following.map((f) => f.followingId);
 
     const followers = await prisma.follow.findMany({
-      where: {
-        followingId: userId,
-      },
-      select: {
-        followerId: true,
-      },
+      where: { followingId: user.id },
+      select: { followerId: true },
     });
-
-    const followersIds = followers.map((f) => f.followerId);
 
     const profile = {
-      ...user,
-      following: followingIds,
-      followers: followersIds,
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      emailVerified: user.emailVerified,
+      image: user.image,
+      createdAt: user.createdAt,
+      questions: formattedQuestions,
+      following: following.map((f) => f.followingId),
+      followers: followers.map((f) => f.followerId),
+      page,
+      limit,
+      totalQuestions,
     };
 
-    return NextResponse.json({
-      profile,
+    return NextResponse.json<ApiResponse<UserProfile>>({
+      success: true,
+      data: profile,
     });
   } catch (error) {
-    console.log("Error in profile [POST]", error);
+    console.log("Error fetching profile:", error);
     return NextResponse.json<ApiResponse<never>>(
       { success: false, error: "Internal server error." },
       { status: 500 }

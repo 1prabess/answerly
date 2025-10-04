@@ -13,9 +13,11 @@ import { toast } from "sonner";
 import Link from "next/link";
 import { RegisterSchema, RegisterType } from "@/lib/zod/authSchema";
 import { Loader } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const RegisterForm = () => {
   const [isRegistering, startRegistering] = useTransition();
+  const router = useRouter();
 
   const {
     register,
@@ -37,6 +39,7 @@ const RegisterForm = () => {
         {
           onSuccess: () => {
             toast.success("Account created successfully!");
+            router.push("/set-username");
           },
           onError: (ctx) => {
             toast.error(ctx.error.message);
@@ -49,6 +52,7 @@ const RegisterForm = () => {
   const handleOAuth = async (provider: "google" | "github") => {
     await authClient.signIn.social({
       provider,
+      callbackURL: "/set-username",
     });
   };
 

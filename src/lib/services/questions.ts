@@ -1,6 +1,12 @@
 import { FeedQuestion } from "@/types/question";
 import axios from "axios";
 import { CreateQuestionType } from "../zod/questionSchema";
+import {
+  ApiResponse,
+  QuestionDetails,
+  QuestionWithAuthorAndTags,
+} from "@/types/api";
+import { config } from "@/config";
 
 // Get questions
 export const getQuestions = async () => {
@@ -11,6 +17,16 @@ export const getQuestions = async () => {
   return questions;
 };
 
+// Get question by id
+export const getQuestion = async (questionId: string) => {
+  const response = await axios.get<ApiResponse<QuestionDetails>>(
+    `/api/questions/${questionId}`
+  );
+
+  if (!response.data.success || !response.data.data) return null;
+
+  return response.data.data;
+};
 // Vote a question
 export const voteQuestion = async (
   questionId: string,

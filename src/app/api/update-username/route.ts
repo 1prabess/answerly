@@ -40,7 +40,7 @@ export const POST = async (request: NextRequest) => {
 
     return NextResponse.json<ApiResponse<never>>({ success: true });
   } catch (error) {
-    console.error("Error updateing usrname:", error);
+    console.error("Error updating username:", error);
     return NextResponse.json<ApiResponse<never>>(
       { success: false, error: "Internal server error" },
       { status: 500 }

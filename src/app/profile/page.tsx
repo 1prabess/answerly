@@ -39,7 +39,7 @@ const MyProfilePage = () => {
     );
 
   return (
-    <div className=" grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-4 md:gap-12 ">
+    <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-4 md:gap-12 ">
       {/* Right Column (Sidebar) */}
       <aside className="order-1 min-w-xs md:order-2 w-full md:w-auto">
         <div className="border rounded pt-14  md:sticky md:top-20">

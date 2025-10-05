@@ -214,7 +214,7 @@ const QuestionFormModal = ({ isOpen, onClose }: QuestionFormModalProps) => {
                 const file = e.target.files?.[0];
                 if (file) {
                   setPreview(URL.createObjectURL(file));
-                  setValue("image", file); // <-- important!
+                  setValue("image", file);
                 }
               }}
             />

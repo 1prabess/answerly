@@ -1,10 +1,11 @@
 import prisma from "@/lib/prisma";
 import { ApiResponse } from "@/types/api";
+import { CommentWithUser } from "@/types/comment";
 import { NextRequest, NextResponse } from "next/server";
 
 export const GET = async (
   _request: NextRequest,
-  { params }: { params: Promise<{ questionId: string }> }
+  { params }: { params: Promise<{ questionId: string }> },
 ) => {
   try {
     const { questionId } = await params;
@@ -12,7 +13,7 @@ export const GET = async (
     if (!questionId) {
       return NextResponse.json<ApiResponse<never>>(
         { success: false, error: "QuestionId is required!" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -22,7 +23,7 @@ export const GET = async (
       include: { user: { select: { id: true, name: true, image: true } } },
     });
 
-    return NextResponse.json<ApiResponse<typeof comments>>({
+    return NextResponse.json<ApiResponse<CommentWithUser[]>>({
       success: true,
       message: "Comments fetched successfully.",
       data: comments,
@@ -31,7 +32,7 @@ export const GET = async (
     console.log("Error in creating comment:", error);
     return NextResponse.json<ApiResponse<never>>(
       { success: false, error: "Internal server error." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 };

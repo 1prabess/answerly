@@ -66,6 +66,7 @@ export const GET = async (request: NextRequest) => {
         image: q.image,
         createdAt: q.createdAt,
         updatedAt: q.updatedAt,
+        authorId: q.authorId,
         author: q.author,
         tags: q.tags,
         upVotes,
@@ -112,7 +113,7 @@ export const GET = async (request: NextRequest) => {
     console.log("Error fetching profile:", error);
     return NextResponse.json<ApiResponse<never>>(
       { success: false, error: "Internal server error." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 };

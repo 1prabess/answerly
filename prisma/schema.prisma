@@ -131,6 +131,7 @@ model Comment {
   questionId String
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+  replyToId  String?
 
   @@map("comment")
 }

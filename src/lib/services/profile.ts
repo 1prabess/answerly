@@ -4,10 +4,10 @@ import axios from "axios";
 export const getProfile = async (
   username: string,
   page: number = 1,
-  limit: number = 10
+  limit: number = 10,
 ) => {
   const response = await axios.get(
-    `/api/profile?username=${username}&page=${page}&limit=${limit}`
+    `/api/profile?username=${username}&page=${page}&limit=${limit}`,
   );
 
   if (!response.data.success || !response.data.data) {
@@ -20,7 +20,7 @@ export const getProfile = async (
 // Follow an user profile
 export const followUser = async (
   currentUserId: string,
-  userToFollowId: string
+  userToFollowId: string,
 ) => {
   const response = await axios.post("/api/follow", {
     followerId: currentUserId,

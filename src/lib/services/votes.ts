@@ -1,8 +1,8 @@
-import { QuestionVoteStats } from "@/types/api";
+import { VoteStats } from "@/types/vote";
 import axios from "axios";
 
 export const getVotes = async (questionId: string) => {
   const response = await axios.get(`/api/vote/${questionId}`);
-  const votes: QuestionVoteStats = response.data.data;
+  const votes: VoteStats = response.data.data;
   return votes;
 };

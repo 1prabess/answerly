@@ -1,6 +1,6 @@
 import { FeedQuestion } from "./question";
 
-export interface UserProfile {
+export type UserProfile = {
   id: string;
   name: string;
   email: string;
@@ -13,4 +13,4 @@ export interface UserProfile {
   page: number;
   limit: number;
   totalQuestions: number;
-}
+};

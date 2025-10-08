@@ -1,7 +1,7 @@
-import { Comment } from "@/generated/prisma";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { ApiResponse } from "@/types/api";
+import { Comment } from "@/types/comment";
 import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -15,7 +15,7 @@ export const POST = async (request: NextRequest) => {
           success: false,
           error: "Unauthorized!",
         },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -23,15 +23,31 @@ export const POST = async (request: NextRequest) => {
 
     const body = await request.json();
 
-    const { questionId, content } = body;
+    const { questionId, content, replyToId } = body;
 
     if (!questionId || !content) {
       return NextResponse.json<ApiResponse<never>>(
         {
           success: false,
-          error: "QuestionId and content is required!",
+          error: "QuestionId and content is required.",
         },
-        { status: 400 }
+        { status: 400 },
+      );
+    }
+
+    const question = await prisma.question.findUnique({
+      where: {
+        id: questionId,
+      },
+    });
+
+    if (!question) {
+      return NextResponse.json<ApiResponse<never>>(
+        {
+          success: false,
+          error: "Question not found.",
+        },
+        { status: 404 },
       );
     }
 
@@ -40,19 +56,22 @@ export const POST = async (request: NextRequest) => {
         userId,
         questionId,
         content,
+        replyToId: replyToId || null,
       },
     });
 
     return NextResponse.json<ApiResponse<Comment>>({
       success: true,
-      message: "Comment created successfully.",
+      message: replyToId
+        ? "Reply created successfully."
+        : "Comment created successfully.",
       data: comment,
     });
   } catch (error) {
     console.log("Error in creating comment:", error);
     return NextResponse.json<ApiResponse<never>>(
       { success: false, error: "Internal server error." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 };

@@ -1,126 +1,65 @@
-"use client";
-
-import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
-import { authClient } from "@/lib/auth-client";
-import { getQuestions } from "@/lib/services/questions";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
-import AskQuestionBox from "./_components/AskQuestionBox";
-import FeedSkeleton from "./_components/FeedSkeleton";
-import QuestionFormModal from "./_components/QuestionFormModal";
+import { getQuestions } from "@/features/questions/services";
 import RecommendedQuestions from "./_components/RecommendedQuestions";
-import { useRouter } from "next/navigation";
-import FeedQuestionCard from "./_components/FeedQuestionCard";
+import QuestionCard from "@/features/questions/components/QuestionCard";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+import EngagementBar from "@/features/questions/components/EngagementBar";
+import Questions from "@/features/questions/components/Questions";
 
-const FeedPage = () => {
-  const { data: session, isPending: isSessionLoading } =
-    authClient.useSession();
+const FeedPage = async () => {
+  const session = await auth.api.getSession({ headers: await headers() });
+  let questions = null;
+  let error = null;
 
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const router = useRouter();
-
-  const {
-    data: questions = [],
-    isPending,
-    isError,
-    refetch,
-  } = useQuery({
-    queryKey: ["questions"],
-    queryFn: getQuestions,
-    staleTime: 5 * 60 * 1000,
-    retry: 2,
-  });
-
-  useEffect(() => {
-    if (!isSessionLoading && !isPending && session?.user.username === null) {
-      router.push("/set-username");
-    }
-  }, [isSessionLoading, isPending, session, router]);
-
-  if (isSessionLoading || isPending) {
-    return (
-      <div>
-        <FeedSkeleton />
-      </div>
-    );
+  try {
+    questions = await getQuestions();
+  } catch (error) {
+    error = error instanceof Error ? error.message : "Something went wrong..";
   }
 
-  if (isError) {
-    return (
-      <Alert variant="destructive">
-        <AlertTitle>Error</AlertTitle>
-        <AlertDescription>
-          Failed to load questions. Please try again.
-          <Button
-            variant="outline"
-            size="sm"
-            className="mt-2"
-            onClick={() => refetch()}
-          >
-            Retry
-          </Button>
-        </AlertDescription>
-      </Alert>
-    );
-  }
+  if (!session) redirect("/login");
 
-  if (questions.length === 0) {
-    return (
-      <div className="fixed inset-0 flex items-center justify-center ">
-        <div className="w-full max-w-md p-4">
-          <div className="text-center py-8">
-            <h2 className="text-lg font-semibold text-muted-foreground">
-              No questions found
-            </h2>
-            <p className="text-sm text-muted-foreground">
-              Be the first to ask a question!
-            </p>
-            <Button
-              variant="link"
-              onClick={() => setIsModalOpen(true)}
-              className="mt-2"
-            >
-              Ask a Question
-            </Button>
-          </div>
-        </div>
+  const hasUsername = !!session.user.username;
 
-        {isModalOpen && (
-          <QuestionFormModal
-            isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(false)}
-          />
-        )}
-      </div>
-    );
-  }
+  if (!hasUsername) redirect("/set-username");
+
+  if (error || !questions) return <div>{error}</div>;
 
   return (
     <div>
-      <h1 className="text-muted-foreground font-semibold mb-2">
+      <h1 className="text-muted-foreground mb-2 font-semibold">
         Recommended Communities
       </h1>
       <RecommendedQuestions />
-      <div className="lg:grid lg:grid-cols-[2fr_1fr] lg:gap-12 mt-2">
+      <div className="mt-2 lg:grid lg:grid-cols-[2fr_1fr] lg:gap-12">
         <div>
           {/* <AskQuestionBox
             name={session?.user.name || ""}
             avatar={session?.user.image || ""}
           /> */}
           <div role="list" aria-label="Question feed">
-            {questions.map((question) => (
-              <FeedQuestionCard
-                key={question.id}
-                question={question}
-                userId={session?.user.id!}
-              />
-            ))}
+            {/* {questions.map((question) => (
+              <div key={question.id} className="space-y-3 border-b py-3">
+                <QuestionCard question={question} variant="small" />
+                <EngagementBar
+                  initialVotes={{
+                    upVotes: question.upVotes,
+                    downVotes: question.downVotes,
+                    userVote: question.userVoted,
+                    score: question.score,
+                  }}
+                  questionId={question.id}
+                  commentCount={question.commentCount}
+                />
+              </div>
+            ))} */}
+            <Questions initialQuestions={questions} variant="small" />
           </div>
         </div>
-        <aside className="hidden lg:block ">
-          <div className="sticky top-20 ">
-            <div className="border rounded-lg p-4">Right Column</div>
+        <aside className="hidden lg:block">
+          <div className="sticky top-20">
+            <div className="rounded-lg border p-4">Right Column</div>
           </div>
         </aside>
       </div>

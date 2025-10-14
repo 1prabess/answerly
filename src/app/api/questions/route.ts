@@ -16,6 +16,7 @@ export const GET = async (request: NextRequest) => {
         author: true,
         votes: true,
         tags: true,
+        _count: { select: { comments: true } },
       },
       orderBy: {
         createdAt: "desc",
@@ -36,12 +37,14 @@ export const GET = async (request: NextRequest) => {
         image: q.image,
         createdAt: q.createdAt,
         updatedAt: q.updatedAt,
+        authorId: q.authorId,
         author: q.author,
         tags: q.tags,
         upVotes,
         downVotes,
         score: upVotes - downVotes,
         userVoted,
+        commentCount: q._count.comments,
       };
     });
 
@@ -51,13 +54,13 @@ export const GET = async (request: NextRequest) => {
         message: "Questions fetched successfully.",
         data: formattedQuestions,
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.log("Error fetching questions:", error);
     return NextResponse.json<ApiResponse<never>>(
       { success: false, error: "Internal server error." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 };
@@ -73,22 +76,18 @@ export const POST = async (request: NextRequest) => {
           success: false,
           error: "Title and Author Id is required.",
         },
-        { status: 400 }
+        { status: 400 },
       );
 
     const validated = CreateQuestionSchema.safeParse(body);
 
     if (!validated.success) {
-      const allErrors = Object.values(validated.error.flatten().fieldErrors)
-        .flat()
-        .filter(Boolean);
-
       return NextResponse.json<ApiResponse<never>>(
         {
           success: false,
-          error: allErrors,
+          error: "Validation failed!",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -98,21 +97,21 @@ export const POST = async (request: NextRequest) => {
       where: { name: { in: tagNames } },
     });
 
-    const foundTags = tags.map((tag) => tag.name);
+    // const foundTags = tags.map((tag) => tag.name);
 
-    const missingTags = tagNames.filter(
-      (name: string) => !foundTags.includes(name)
-    );
+    // const missingTags = tagNames.filter(
+    //   (name: string) => !foundTags.includes(name),
+    // );
 
-    if (missingTags.length > 0) {
-      return NextResponse.json<ApiResponse<never>>(
-        {
-          success: false,
-          error: missingTags,
-        },
-        { status: 400 }
-      );
-    }
+    // if (missingTags.length > 0) {
+    //   return NextResponse.json<ApiResponse<never>>(
+    //     {
+    //       success: false,
+    //       error: missingTags,
+    //     },
+    //     { status: 400 },
+    //   );
+    // }
 
     const question: Question = await prisma.question.create({
       data: {
@@ -127,21 +126,19 @@ export const POST = async (request: NextRequest) => {
       include: { tags: true },
     });
 
-    console.log(question);
-
     return NextResponse.json<ApiResponse<Question>>(
       {
         success: true,
         message: "Question created successfully.",
         data: question,
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.log("Error in creating question:", error);
     return NextResponse.json<ApiResponse<never>>(
       { success: false, error: "Internal server error." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 };

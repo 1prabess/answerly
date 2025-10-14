@@ -6,6 +6,7 @@ export type Question = {
   createdAt: Date;
   updatedAt: Date;
   authorId: string | null;
+  communityId?: string | null;
 };
 
 export type FeedQuestion = Question & {
@@ -28,6 +29,7 @@ export type FeedQuestion = Question & {
     id: string;
     name: string;
   }[];
+  commentCount: number;
 };
 
 export type QuestionDetails = Question & {
@@ -41,4 +43,5 @@ export type QuestionDetails = Question & {
   downVotes: number;
   score: number;
   userVote: "UP" | "DOWN" | null;
+  commentCount: number;
 };

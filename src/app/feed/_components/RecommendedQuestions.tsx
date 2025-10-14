@@ -17,15 +17,15 @@ const RecommendedQuestionCard = ({
   subreddit,
 }: RecommendedQuestionCardProps) => {
   return (
-    <Card className="relative rounded-md min-w-[320px] max-w-[320px] p-0 border-none overflow-hidden snap-start">
-      <div className="relative w-full h-44">
+    <Card className="relative max-w-[320px] min-w-[320px] snap-start overflow-hidden rounded-none border-none p-0">
+      <div className="relative h-44 w-full">
         <Image src={image} alt={title} fill className="object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent" />
       </div>
       <div className="absolute bottom-0 p-4 text-neutral-100">
-        <h3 className="font-semibold text-base line-clamp-2">{title}</h3>
-        <p className="text-sm line-clamp-2">{subtitle}</p>
-        <div className="text-xs mt-2 opacity-90">
+        <h3 className="line-clamp-2 text-base font-semibold">{title}</h3>
+        <p className="line-clamp-2 text-sm">{subtitle}</p>
+        <div className="mt-2 text-xs opacity-90">
           {subreddit} <span>and more</span>
         </div>
       </div>
@@ -62,7 +62,7 @@ const RecommendedQuestions = () => {
   ];
 
   return (
-    <div className="w-full overflow-x-auto scrollbar-hide scroll-smooth snap-x">
+    <div className="scrollbar-hide w-full snap-x overflow-x-auto scroll-smooth">
       <div className="flex gap-4">
         {data.map((item, idx) => (
           <RecommendedQuestionCard key={idx} {...item} />

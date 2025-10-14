@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { IBM_Plex_Sans } from "next/font/google";
 
 import "./globals.css";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
@@ -8,10 +8,10 @@ import Navbar from "@/components/layout/Navbar";
 import Sidebar from "@/components/layout/Sidebar";
 import QueryProvider from "@/components/providers/QueryProvider";
 
-const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const ibmPlex = IBM_Plex_Sans({
+  variable: "--font-ibm-plex",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -26,9 +26,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`${ibmPlex.variable} antialiased`}>
         <QueryProvider>
           <ThemeProvider
             attribute="class"
@@ -38,9 +36,9 @@ export default function RootLayout({
           >
             <Navbar />
 
-            <div className="pt-20 ">
-              <div className="mx-auto max-w-[90rem] px-4 sm:px-8 grid grid-cols-1 lg:grid-cols-[auto_1fr_auto] gap-0">
-                <div className="hidden lg:block w-64">
+            <div className="pt-20">
+              <div className="mx-auto grid max-w-[90rem] grid-cols-1 gap-0 px-4 sm:px-8 lg:grid-cols-[auto_1fr_auto]">
+                <div className="hidden w-64 lg:block">
                   <Sidebar />
                 </div>
 

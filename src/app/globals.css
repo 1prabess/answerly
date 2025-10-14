@@ -331,6 +331,11 @@
   }
 }
 
+html,
+body {
+  font-family: var(--font-ibm-plex), system-ui, sans-serif;
+}
+
 /* Hide scrollbars for all directions */
 .scrollbar-hide::-webkit-scrollbar {
   display: none; /* Chrome, Safari, Edge */

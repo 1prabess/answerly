@@ -3,6 +3,7 @@ import { ApiResponse } from "@/types/api";
 import { UserProfile } from "@/types/profile";
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
 // Get user profile
 export const GET = async (request: NextRequest) => {
@@ -37,7 +38,7 @@ export const GET = async (request: NextRequest) => {
       });
 
     // Get session to identify the requesting user
-    const session = await auth.api.getSession({ headers: request.headers });
+    const session = await auth.api.getSession({ headers: await headers() });
     const currentUserId = session?.user?.id;
 
     const questions = await prisma.question.findMany({
@@ -46,6 +47,7 @@ export const GET = async (request: NextRequest) => {
         author: true,
         votes: true,
         tags: true,
+        _count: { select: { comments: true } },
       },
       skip,
       take: limit,
@@ -73,6 +75,7 @@ export const GET = async (request: NextRequest) => {
         downVotes,
         score: upVotes - downVotes,
         userVoted,
+        commentCount: q._count.comments,
       };
     });
 

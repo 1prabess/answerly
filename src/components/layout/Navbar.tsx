@@ -29,16 +29,16 @@ const Navbar = () => {
 
   return (
     <nav
-      className="fixed top-0 left-0 w-full z-50 bg-background border-b"
+      className="bg-background fixed top-0 left-0 z-50 w-full border-b"
       style={{ height: "64px" }}
     >
-      <div className="mx-auto max-w-[90rem] h-full px-4 sm:px-8 flex items-center justify-between">
+      <div className="mx-auto flex h-full max-w-[90rem] items-center justify-between px-4 sm:px-8">
         <div className="flex items-center gap-4">
           <Sheet>
             <SheetTrigger className="lg:hidden">
-              <Menu className="w-6 h-6" />
+              <Menu className="h-6 w-6" />
             </SheetTrigger>
-            <SheetContent side="left" className="py-8 pl-8 w-64">
+            <SheetContent side="left" className="w-64 py-8 pl-8">
               <SheetTitle>
                 <VisuallyHidden>Sidebar Navigation</VisuallyHidden>
               </SheetTitle>
@@ -54,7 +54,7 @@ const Navbar = () => {
           </div>
         </div>
 
-        <div className="hidden md:flex flex-1 px-6 max-w-md">
+        <div className="hidden max-w-md flex-1 px-6 md:flex">
           <Input type="text" placeholder="Search..." className="w-full" />
         </div>
 

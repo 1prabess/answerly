@@ -2,18 +2,21 @@
 
 import { useState } from "react";
 import { Home, TrendingUp, Plus, Users, BarChart2 } from "lucide-react";
-import QuestionFormModal from "@/app/feed/_components/QuestionFormModal";
+// import QuestionFormModal from "@/app/feed/_components/QuestionFormModal";
+import CreateCommunityModal from "@/features/communities/components/CreateCommunityModal"; // 👈 import your modal
+import QuestionFormModal from "@/features/questions/components/QuestionFormModal";
 
 export default function Sidebar({ mobile = false }: { mobile?: boolean }) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false);
+  const [isCommunityModalOpen, setIsCommunityModalOpen] = useState(false);
 
   return (
     <>
       <aside
-        className={`${
+        className={` ${
           mobile
-            ? "h-full overflow-y-auto "
-            : "w-54 h-[calc(100vh-64px)] border-r py-2 text-sm sticky top-20"
+            ? "h-full overflow-y-auto"
+            : "sticky top-20 h-[calc(100vh-64px)] w-48 border-r py-2 text-sm"
         }`}
       >
         <div className="space-y-4">
@@ -28,19 +31,30 @@ export default function Sidebar({ mobile = false }: { mobile?: boolean }) {
             <SidebarItem
               icon={<Plus size={20} />}
               label="Ask a question"
-              onClick={() => setIsModalOpen(true)}
+              onClick={() => setIsQuestionModalOpen(true)}
             />
           </SidebarSection>
 
           <SidebarSection title="COMMUNITIES">
-            <SidebarItem icon={<Plus size={20} />} label="Create Community" />
+            <SidebarItem
+              icon={<Plus size={20} />}
+              label="Create Community"
+              onClick={() => setIsCommunityModalOpen(true)}
+            />
           </SidebarSection>
         </div>
       </aside>
 
+      {/* Question Modal */}
       <QuestionFormModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        isOpen={isQuestionModalOpen}
+        onClose={() => setIsQuestionModalOpen(false)}
+      />
+
+      {/* Community Modal */}
+      <CreateCommunityModal
+        open={isCommunityModalOpen}
+        onClose={() => setIsCommunityModalOpen(false)}
       />
     </>
   );
@@ -59,12 +73,12 @@ function SidebarItem({
 }) {
   return (
     <div
-      className="flex items-center gap-2 cursor-pointer hover:underline py-1"
+      className="flex cursor-pointer items-center gap-2 py-1 hover:underline"
       onClick={onClick}
     >
       <div className="text-primary">{icon}</div>
       <span>{label}</span>
-      {beta && <span className="text-xs text-red-600 font-semibold">BETA</span>}
+      {beta && <span className="text-xs font-semibold text-red-600">BETA</span>}
     </div>
   );
 }
@@ -77,8 +91,8 @@ function SidebarSection({
   children: React.ReactNode;
 }) {
   return (
-    <div className="space-y-2 mb-6">
-      <h3 className="text-xs text-gray-500 font-semibold">{title}</h3>
+    <div className="mb-6 space-y-2">
+      <h3 className="text-xs font-semibold text-gray-500">{title}</h3>
       {children}
     </div>
   );

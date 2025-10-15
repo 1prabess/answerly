@@ -38,7 +38,7 @@ export default function RootLayout({
 
             <div className="pt-20">
               <div className="mx-auto grid max-w-[90rem] grid-cols-1 gap-0 px-4 sm:px-8 lg:grid-cols-[auto_1fr_auto]">
-                <div className="hidden w-64 lg:block">
+                <div className="hidden w-56 lg:block">
                   <Sidebar />
                 </div>
 

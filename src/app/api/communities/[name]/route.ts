@@ -6,36 +6,39 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 
 export const GET = async (
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ name: string }> },
 ) => {
   try {
     const { name } = await params;
 
-    const session = await auth.api.getSession({ headers: await headers() });
+    // Get current user session
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
     const currentUserId = session?.user.id;
 
+    // Fetch community and include member count and total posts
     const community = await prisma.community.findUnique({
-      where: {
-        name,
-      },
+      where: { name },
       include: {
         _count: {
-          select: { CommunityMember: true },
+          select: {
+            CommunityMember: true,
+            question: true, // total posts
+          },
         },
       },
     });
 
     if (!community) {
       return NextResponse.json<ApiResponse<never>>(
-        {
-          success: false,
-          error: "Community not found.",
-        },
+        { success: false, error: "Community not found." },
         { status: 404 },
       );
     }
 
+    // Check if current user has joined this community
     let hasJoined = false;
     if (currentUserId) {
       const memberCount = await prisma.communityMember.count({
@@ -45,13 +48,9 @@ export const GET = async (
         },
       });
       hasJoined = memberCount > 0;
-      console.log(
-        `Checking membership: userId=${currentUserId}, communityId=${community.id}, count=${memberCount}, hasJoined=${hasJoined}`,
-      );
-    } else {
-      console.log("No user session, setting hasJoined to false");
     }
 
+    // Fetch questions in this community with votes, tags, comments
     const questions = await prisma.question.findMany({
       where: { communityId: community.id },
       include: {
@@ -63,6 +62,7 @@ export const GET = async (
       orderBy: { createdAt: "desc" },
     });
 
+    // Format questions with upVotes, downVotes, score, userVoted
     const formattedQuestions = questions.map((q) => {
       const upVotes = q.votes.filter((v) => v.type === "UP").length;
       const downVotes = q.votes.filter((v) => v.type === "DOWN").length;
@@ -88,14 +88,17 @@ export const GET = async (
       };
     });
 
+    // Build community details response
     const communityDetails: CommunityDetails = {
       id: community.id,
       name: community.name,
       description: community.description,
       avatar: community.avatar ?? null,
       banner: community.banner ?? null,
+      createdAt: community.createdAt, // community creation date
       joined: hasJoined,
       memberCount: community._count.CommunityMember,
+      totalQuestions: community._count.question, // total number of questions/posts
       questions: formattedQuestions,
     };
 

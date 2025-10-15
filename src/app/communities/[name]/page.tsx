@@ -5,9 +5,8 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { FeedQuestion } from "@/types/question";
 import { CommunityDetails } from "@/types/community";
-import EngagementBar from "@/features/questions/components/EngagementBar";
-import Questions from "@/features/questions/components/Questions";
 import CommunityQuestions from "@/features/questions/components/CommunityQuestions";
+import CommunityIntro from "@/features/communities/components/CommunityIntro";
 
 const CommunityPage = async ({
   params,
@@ -20,7 +19,7 @@ const CommunityPage = async ({
 
   const community = await prisma.community.findUnique({
     where: { name },
-    include: { _count: { select: { CommunityMember: true } } },
+    include: { _count: { select: { CommunityMember: true, question: true } } },
   });
 
   if (!community) return <div>Community not found.</div>;
@@ -73,16 +72,27 @@ const CommunityPage = async ({
     description: community.description,
     avatar: community.avatar ?? null,
     banner: community.banner ?? null,
+    createdAt: community.createdAt,
     joined: !!hasJoined,
     memberCount: community._count.CommunityMember,
+    totalQuestions: community._count.question,
     questions: formattedQuestions,
   };
 
   return (
     <div>
       <CommunityHeader initialCommunityDetails={communityDetails} />
-      <div className="grid grid-cols-1 gap-12 lg:grid-cols-[2fr_1fr]">
-        <div role="list" aria-label="Question feed">
+
+      <div className="grid grid-cols-1 sm:gap-12 lg:grid-cols-[2fr_1fr]">
+        <div className="order-1 h-fit lg:sticky lg:top-20 lg:order-2">
+          <CommunityIntro initialCommunityDetails={communityDetails} />
+        </div>
+
+        <div
+          role="list"
+          aria-label="Question feed"
+          className="order-2 border-t lg:order-1"
+        >
           <CommunityQuestions
             communityName={communityDetails.name}
             initialQuestions={communityDetails.questions}

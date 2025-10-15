@@ -42,6 +42,7 @@ model Community {
   banner          String?
   question        Question[]
   CommunityMember CommunityMember[]
+  createdAt       DateTime          @default(now())
 }
 
 model CommunityMember {

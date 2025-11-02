@@ -17,6 +17,9 @@ export const GET = async (request: NextRequest) => {
         votes: true,
         tags: true,
         _count: { select: { comments: true } },
+        community: {
+          select: { id: true, name: true, avatar: true },
+        },
       },
       orderBy: {
         createdAt: "desc",
@@ -45,6 +48,7 @@ export const GET = async (request: NextRequest) => {
         score: upVotes - downVotes,
         userVoted,
         commentCount: q._count.comments,
+        community: q.community,
       };
     });
 

@@ -1,3 +1,5 @@
+import { CommunityPreview } from "./community";
+
 export type Question = {
   id: string;
   title: string;
@@ -30,6 +32,7 @@ export type FeedQuestion = Question & {
     name: string;
   }[];
   commentCount: number;
+  community?: CommunityPreview;
 };
 
 export type QuestionDetails = Question & {
@@ -44,4 +47,5 @@ export type QuestionDetails = Question & {
   score: number;
   userVote: "UP" | "DOWN" | null;
   commentCount: number;
+  community: CommunityPreview;
 };

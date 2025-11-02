@@ -50,6 +50,16 @@ export const GET = async (
       hasJoined = memberCount > 0;
     }
 
+    const communityAdmins = await prisma.communityMember.findMany({
+      where: {
+        communityId: community.id,
+        role: "ADMIN",
+      },
+      include: {
+        user: true,
+      },
+    });
+
     // Fetch questions in this community with votes, tags, comments
     const questions = await prisma.question.findMany({
       where: { communityId: community.id },
@@ -88,18 +98,24 @@ export const GET = async (
       };
     });
 
-    // Build community details response
     const communityDetails: CommunityDetails = {
       id: community.id,
       name: community.name,
       description: community.description,
       avatar: community.avatar ?? null,
       banner: community.banner ?? null,
-      createdAt: community.createdAt, // community creation date
+      createdAt: community.createdAt,
       joined: hasJoined,
       memberCount: community._count.CommunityMember,
-      totalQuestions: community._count.question, // total number of questions/posts
+      totalQuestions: community._count.question,
       questions: formattedQuestions,
+      admins: communityAdmins.map((a) => ({
+        id: a.user.id,
+        name: a.user.name,
+        username: a.user.username,
+        email: a.user.email,
+        image: a.user.image,
+      })),
     };
 
     return NextResponse.json<ApiResponse<CommunityDetails>>({

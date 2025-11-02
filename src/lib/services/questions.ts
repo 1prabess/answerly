@@ -1,16 +1,11 @@
-import { FeedQuestion } from "@/types/question";
+import { FeedQuestion, QuestionDetails } from "@/types/question";
 import axios from "axios";
 import { CreateQuestionType } from "../zod/questionSchema";
-import {
-  ApiResponse,
-  QuestionDetails,
-  QuestionWithAuthorAndTags,
-} from "@/types/api";
-import { config } from "@/config";
+import { ApiResponse } from "@/types/api";
 
 // Get questions
 export const getQuestions = async () => {
-  const response = await axios.get("/api/questions");
+  const response = await axios.get("http://localhost:3000/api/questions");
 
   const questions: FeedQuestion[] = response.data.data;
 
@@ -20,18 +15,19 @@ export const getQuestions = async () => {
 // Get question by id
 export const getQuestion = async (questionId: string) => {
   const response = await axios.get<ApiResponse<QuestionDetails>>(
-    `/api/questions/${questionId}`
+    `/api/questions/${questionId}`,
   );
 
   if (!response.data.success || !response.data.data) return null;
 
   return response.data.data;
 };
+
 // Vote a question
 export const voteQuestion = async (
   questionId: string,
   userId: string,
-  type: "UP" | "DOWN"
+  type: "UP" | "DOWN",
 ) => {
   const response = await axios.post(`/api/questions/${questionId}`, {
     userId,

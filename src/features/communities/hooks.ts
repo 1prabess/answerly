@@ -1,13 +1,17 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  useMutation,
-  useQueries,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
-import { createCommunity, getCommunity, joinCommunity } from "./services";
+  createCommunity,
+  deleteCommunityMember,
+  getCommunity,
+  getCommunityMembers,
+  joinCommunity,
+  updateCommunityMember,
+} from "./services";
 import { CommunityDetails } from "@/types/community";
-import { FeedQuestion } from "@/types/question";
-import { getCommunityQuestions } from "../questions/services";
+import {
+  DeleteCommunityMemberPayload,
+  UpdateCommunityMemberPayload,
+} from "./types";
 
 // Hook to create a new community
 export const useCreateCommunity = () => {
@@ -42,5 +46,44 @@ export const useGetCommunity = (
     queryKey: ["community", communityName],
     queryFn: () => getCommunity(communityName),
     initialData,
+  });
+};
+
+// Hook to get community members
+export const useGetCommunityMembers = (communityName: string) => {
+  return useQuery({
+    queryKey: ["communityMembers", communityName],
+    queryFn: () => getCommunityMembers(communityName),
+  });
+};
+
+// Hook to update role of a community member
+export const useUpdateCommunityMember = (communityName: string) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: UpdateCommunityMemberPayload) =>
+      updateCommunityMember(communityName, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["communityMembers", communityName],
+      });
+    },
+  });
+};
+
+// Hook to delete a community member
+export const useDeleteCommunityMember = (communityName: string) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: DeleteCommunityMemberPayload) =>
+      deleteCommunityMember(communityName, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["communityMembers", communityName],
+      });
+      queryClient.invalidateQueries({ queryKey: ["community", communityName] });
+    },
   });
 };

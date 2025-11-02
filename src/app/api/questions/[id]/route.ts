@@ -89,3 +89,56 @@ export const GET = async (
     );
   }
 };
+
+// Delete a question
+export const DELETE = async (
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) => {
+  try {
+    const session = await auth.api.getSession({ headers: await headers() });
+    const userId = session?.user.id;
+
+    if (!session || !userId) {
+      return NextResponse.json<ApiResponse<never>>(
+        { success: false, error: "Unauthorized!" },
+        { status: 401 },
+      );
+    }
+
+    const { id: questionId } = await params;
+
+    const question = await prisma.question.findUnique({
+      where: { id: questionId },
+    });
+
+    if (!question) {
+      return NextResponse.json<ApiResponse<never>>(
+        { success: false, error: "Question not found!" },
+        { status: 404 },
+      );
+    }
+
+    if (question.authorId !== userId) {
+      return NextResponse.json<ApiResponse<never>>(
+        { success: false, error: "Forbidden!" },
+        { status: 403 },
+      );
+    }
+
+    await prisma.question.delete({
+      where: { id: questionId },
+    });
+
+    return NextResponse.json<ApiResponse<never>>(
+      { success: true, message: "Question deleted successfully!" },
+      { status: 200 },
+    );
+  } catch (error) {
+    console.error("Error deleting question:", error);
+    return NextResponse.json<ApiResponse<never>>(
+      { success: false, error: "Internal server error." },
+      { status: 500 },
+    );
+  }
+};

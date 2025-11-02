@@ -1,26 +1,17 @@
 "use client";
 
 import { FeedQuestion } from "@/types/question";
-
+import { useQuestions } from "../hooks";
 import QuestionCard from "./QuestionCard";
 import EngagementBar from "./EngagementBar";
-import { useCommunityQuestions } from "../hooks";
 
-type CommunityQuestionsProps = {
-  communityName: string;
+type QuestionsProps = {
   variant: "small" | "large";
   initialQuestions: FeedQuestion[];
 };
 
-const CommunityQuestions = ({
-  communityName,
-  initialQuestions,
-  variant,
-}: CommunityQuestionsProps) => {
-  const { data: questions } = useCommunityQuestions(
-    communityName,
-    initialQuestions,
-  );
+const Questions = ({ initialQuestions, variant }: QuestionsProps) => {
+  const { data: questions } = useQuestions(initialQuestions);
 
   if (!questions) return null;
 
@@ -28,11 +19,7 @@ const CommunityQuestions = ({
     <div>
       {questions.map((question) => (
         <div key={question.id} className="space-y-3 border-b py-5">
-          <QuestionCard
-            question={question}
-            variant={variant}
-            communityName={communityName}
-          />
+          <QuestionCard question={question} variant={variant} />
           <EngagementBar
             initialVotes={{
               upVotes: question.upVotes,
@@ -49,4 +36,4 @@ const CommunityQuestions = ({
   );
 };
 
-export default CommunityQuestions;
+export default Questions;
